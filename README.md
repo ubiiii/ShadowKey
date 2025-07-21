@@ -23,7 +23,7 @@ Built with Python + Flask and designed for both desktop and mobile browsers.
 
 ## 🧪 Live Demo
 
-🌐 [Check out ShadowKey live on Render](https://your-render-app-url.com)
+🌐 [Check out ShadowKey live on Render]([https://your-render-app-url.com](https://shadowkey-yz4y.onrender.com/))
 
 *(Replace this with your actual Render URL once deployed)*
 
@@ -31,7 +31,11 @@ Built with Python + Flask and designed for both desktop and mobile browsers.
 
 ## 📸 Screenshot
 
-![ShadowKey Web App Screenshot](https://your-screenshot-link.com)
+![ShadowKey Web App Screenshot]
+
+<img width="1450" height="774" alt="image" src="https://github.com/user-attachments/assets/1105dcee-4711-4e32-804a-ccb1586ab02f" />
+
+<img width="1399" height="480" alt="image" src="https://github.com/user-attachments/assets/2b8acd2a-6da8-46ee-86ac-7a35ae17f10f" />
 
 *(Optional — add a screenshot here after deployment)*
 
