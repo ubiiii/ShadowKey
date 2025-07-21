@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShadowKey - Password Checker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      padding: 2rem;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .status-strong { color: limegreen; }
+    .status-weak { color: orangered; }
+    .status-moderate { color: gold; }
+    .checklist span { display: block; margin: 0.2rem 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center mb-4">🔐 ShadowKey</h1>
+    
+    <div class="mb-3">
+      <label for="passwordInput" class="form-label">Input your password to get a strength analysis:</label>
+      <input type="password" class="form-control" id="passwordInput" placeholder="••••••••">
+    </div>
+
+    <button class="btn btn-primary" onclick="checkPassword()">Check Strength</button>
+
+    <hr>
+
+    <div id="result" class="mt-4">
+      <h4>Strength: <span id="strengthLabel"></span></h4>
+      <div class="checklist" id="ruleList"></div>
+      <h5>Estimated Crack Time: <span id="crackTimeLabel"></span></h5>
+
+    </div>
+
+    <hr>
+        <h3>🔧 Generate a New Secure Password</h3>
+
+        <div class="mb-3">
+            <label for="lengthInput" class="form-label">
+                Length: <span id="lengthValue">12</span>
+            </label>
+            <input type="range" class="form-range" id="lengthInput" min="4" max="64" value="12" step="1" oninput="updateLengthLabel()">
+        </div>
+
+
+        <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="genUpper" checked>
+        <label class="form-check-label" for="genUpper">Include Uppercase</label>
+        </div>
+        <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="genLower" checked>
+        <label class="form-check-label" for="genLower">Include Lowercase</label>
+        </div>
+        <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="genDigits" checked>
+        <label class="form-check-label" for="genDigits">Include Numbers</label>
+        </div>
+        <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="genSymbols" checked>
+        <label class="form-check-label" for="genSymbols">Include Symbols</label>
+        </div>
+
+        <button class="btn btn-success mt-3" onclick="generatePassword()">Generate Password</button>
+
+<h4 class="mt-3">
+  Generated Password:
+  <code id="generatedPassword" style="user-select: all;">Your password will appear here</code>
+  <button class="btn btn-outline-secondary btn-sm ms-2" onclick="copyPassword()">Copy</button>
+  <span id="copyStatus" class="ms-2" style="font-size: 0.9rem;"></span>
+</h4>
+
+  </div>
+
+<script>
+  async function checkPassword() {
+    const password = document.getElementById('passwordInput').value;
+    const res = await fetch('/check-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    const data = await res.json();
+    const strength = data.strength;
+    const rules = data.rules;
+
+    // Update strength label
+    const label = document.getElementById('strengthLabel');
+    label.textContent = strength;
+
+    label.className = '';  // Clear old classes
+    if (strength === 'Very Strong' || strength === 'Strong') label.classList.add('status-strong');
+    else if (strength === 'Moderate') label.classList.add('status-moderate');
+    else label.classList.add('status-weak');
+
+    // Update checklist
+    const list = document.getElementById('ruleList');
+    list.innerHTML = '';  // Clear old list
+    for (const [rule, passed] of Object.entries(rules)) {
+      const line = document.createElement('span');
+      line.textContent = `${passed ? '✔' : '✘'} ${rule}`;
+      line.style.color = passed ? 'limegreen' : 'orangered';
+      list.appendChild(line);
+    }
+
+    // ✅ Set crack time estimate
+    document.getElementById('crackTimeLabel').textContent = data.crack_time;
+  }
+</script>
+
+<script>
+  async function generatePassword() {
+    const length = document.getElementById('lengthInput').value;
+    const data = {
+      length: parseInt(length),
+      uppercase: document.getElementById('genUpper').checked,
+      lowercase: document.getElementById('genLower').checked,
+      numbers: document.getElementById('genDigits').checked,
+      symbols: document.getElementById('genSymbols').checked
+    };
+
+    const res = await fetch('/generate-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    document.getElementById('generatedPassword').textContent = result.password || "Error!";
+  }
+</script>
+<script>
+  const checkboxIds = ['genUpper', 'genLower', 'genDigits', 'genSymbols'];
+  const checkboxes = checkboxIds.map(id => document.getElementById(id));
+
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+      const checked = checkboxes.filter(cb => cb.checked);
+
+      // If this is the last one and user tries to uncheck it — revert silently
+      if (checked.length === 0) {
+        this.checked = true;  // silently keep it checked
+      }
+    });
+  });
+</script>
+
+<script>
+  function updateLengthLabel() {
+    document.getElementById('lengthValue').textContent = document.getElementById('lengthInput').value;
+  }
+
+  // Call once at load in case JS loads before DOM
+  updateLengthLabel();
+</script>
+<script>
+  function copyPassword() {
+    const passText = document.getElementById('generatedPassword').textContent;
+    navigator.clipboard.writeText(passText).then(() => {
+      document.getElementById('copyStatus').textContent = "Copied!";
+      setTimeout(() => {
+        document.getElementById('copyStatus').textContent = "";
+      }, 2000);
+    });
+  }
+</script>
+
+<footer style="text-align: center; padding: 10px; font-size: 0.9em; color: #666;">
+  &copy; 2025 <a target='_blank' href='https://utkarshlubal.github.io/in/'>ubii</a>. All rights reserved.
+</footer>
+
+</body>
+</html>
