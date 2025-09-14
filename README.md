@@ -37,6 +37,14 @@ Built with Python + Streamlit and designed for both desktop and mobile browsers.
 
 ---
 
+## 🧪 Live Demo
+
+🌐 **Flask Version**: [Check out ShadowKey live on Render](https://shadowkey-yz4y.onrender.com)
+
+🌐 **Streamlit Version**: Deploy to Streamlit Cloud using the button above!
+
+---
+
 ## 📸 Screenshots
 
 ### Original Flask Version
@@ -44,6 +52,11 @@ Built with Python + Streamlit and designed for both desktop and mobile browsers.
 
 ### New Streamlit Version
 > Screenshots of the modern Streamlit interface coming soon!
+
+### Original Flask Version Screenshots
+<img width="1450" height="774" alt="ShadowKey Flask Interface" src="https://github.com/user-attachments/assets/1105dcee-4711-4e32-804a-ccb1586ab02f" />
+
+<img width="1399" height="480" alt="ShadowKey Password Generator" src="https://github.com/user-attachments/assets/2b8acd2a-6da8-46ee-86ac-7a35ae17f10f" />
 
 ---
 
